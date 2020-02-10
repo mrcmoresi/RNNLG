@@ -197,14 +197,12 @@ class Model(object):
                 # log message 
                 if self.debug and num_sent%100==0:
                     print('Finishing %8d sent in epoch %3d\r' % \
-                            (num_sent,epoch),
-                    sys.stdout.flush())
+                            (num_sent,epoch))
             # log message
             sec = (time.time()-tic)/60.0
             if self.debug:
                 print('Epoch %3d, Alpha %.6f, TRAIN entropy:%.2f, Time:%.2f mins,' %\
-                        (epoch, self.lr, -train_logp/log10(2)/wcn, sec),
-                sys.stdout.flush())
+                        (epoch, self.lr, -train_logp/log10(2)/wcn, sec))
 
             # validation phase
             self.valid_logp, wcn = 0.0,0.0
@@ -226,8 +224,11 @@ class Model(object):
             # decide to throw/keep weights
             if self.valid_logp < self.llogp:
                 self.updateTheanoParams()
+                print('update Theano params')
             else:
                 self.updateNumpyParams()
+                print('update NP params')
+            
             self.saveNet()
             # learning rate decay
             if lr_divide>=self.lr_divide:
@@ -328,12 +329,10 @@ class Model(object):
                 num_sent+=1
                 if self.debug and num_sent%1==0:
                     print('Finishing %8d sent in epoch %3d\r' % \
-                            (num_sent,epoch),
-                    sys.stdout.flush())
+                            (num_sent,epoch))
             sec = (time.time()-tic)/60.0
             if self.debug:
-                print('Epoch %2d, Alpha %.4f, TRAIN Obj:%.4f, Expected BLEU:%.4f, Expected ERR:%.4f, Time:%.2f mins,' % (epoch, self.lr, train_obj/float(num_sent), train_bleu/float(num_sent), train_err/float(num_sent), sec),
-                sys.stdout.flush())
+                print('Epoch %2d, Alpha %.4f, TRAIN Obj:%.4f, Expected BLEU:%.4f, Expected ERR:%.4f, Time:%.2f mins,' % (epoch, self.lr, train_obj/float(num_sent), train_bleu/float(num_sent), train_err/float(num_sent), sec))
 
             # validation phase
             self.valid_obj = 0.0 
@@ -511,16 +510,21 @@ class Model(object):
     def saveNet(self):
         if self.debug:
             print('saving net to file ... ')
+            print(self)
         self.updateNumpyParams()
+
+        globs = globals()
+        locs = locals()
         bundle={
-            'learn' :dict( [(name,eval(name)) for name in self.learn_vars]  ),
-            'data'  :dict( [(name,eval(name)) for name in self.data_vars]   ),
-            'gen'   :dict( [(name,eval(name)) for name in self.gen_vars]    ),
-            'model' :dict( [(name,eval(name)) for name in self.model_vars]  ),
-            'mode'  :dict( [(name,eval(name)) for name in self.mode_vars]   ),
-            'params':dict( [(name,eval(name)) for name in self.params_vars] )
+            'learn' :dict( [(name,eval(name, globs, locs)) for name in self.learn_vars]  ),
+            'data'  :dict( [(name,eval(name, globs, locs)) for name in self.data_vars]   ),
+            'gen'   :dict( [(name,eval(name, globs, locs)) for name in self.gen_vars]    ),
+            'model' :dict( [(name,eval(name, globs, locs)) for name in self.model_vars]  ),
+            'mode'  :dict( [(name,eval(name, globs, locs)) for name in self.mode_vars]   ),
+            'params':dict( [(name,eval(name, globs, locs)) for name in self.params_vars] )
         }
-        pk.dump(bundle, open(self.modelfile, 'wb'))
+        with open (self.modelfile, 'wb') as mf:
+            pk.dump(bundle, mf)
 
     def loadNet(self,parser,mode):
 

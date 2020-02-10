@@ -35,7 +35,7 @@ class NGModel(object):
             words = ['</s>'] + words + ['</s>']
             # unigram
             for w in words:
-                if self.model[1].has_key(w):
+                if w in self.model[1]:
                     self.model[1][w] += 1.0
                 else:
                     self.model[1][w] =  1.0
@@ -47,9 +47,9 @@ class NGModel(object):
                     context = tuple(words[i-n+1:i])
                     word = words[i]
                     # find context
-                    if self.model[n].has_key(context):
+                    if context in self.model[n]:
                         # seen context and word
-                        if self.model[n][context].has_key(word):
+                        if word in self.model[n][context]:
                             self.model[n][context][word]+=1.0
                         else: # new word
                             self.model[n][context][word] =1.0
@@ -58,14 +58,14 @@ class NGModel(object):
 
         # normalise everything into log prob
         sum1 = sum([cnt for cnt in self.model[1].values()])
-        for w,cnt in self.model[1].iteritems():
+        for w,cnt in self.model[1].items():
             self.model[1][w] = cnt/sum1
         self.model[1] = sorted(self.model[1].items(),
                 key=operator.itemgetter(1),reverse=True)
         for n in range(2,self.n+1):
-            for context,wdct in self.model[n].iteritems():
+            for context,wdct in self.model[n].items():
                 sumc = sum([cnt for cnt in wdct.values()])
-                for w,cnt in wdct.iteritems():
+                for w,cnt in wdct.items():
                     self.model[n][context][w] = cnt/sumc
                 self.model[n][context] = sorted(
                         self.model[n][context].items(),
@@ -173,7 +173,7 @@ class NGModel(object):
         while NG>1: # while >1 gram 
             picked_ngram = self.model[NG]
             cntxt = tuple(context[-NG+1:])
-            if self.model[NG].has_key(cntxt) and len(self.model[NG][cntxt])>0:
+            if cntxt in self.model[NG] and len(self.model[NG][cntxt])>0:
                 # if cannot find the context using current ngram
                 cutoff = self.beamwidth if \
                         len(self.model[NG][cntxt])>self.beamwidth\

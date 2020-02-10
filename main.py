@@ -31,8 +31,11 @@ if __name__ == '__main__':
     else: 
         # NN case        
         model = Model(config,args)
+        print("CREE UN MODELO " , model)
         if args.mode=='train' or args.mode=='adapt':
-            model.trainNet()
+            from ipdb import launch_ipdb_on_exception
+            with launch_ipdb_on_exception():
+                model.trainNet()
         elif args.mode=='test':
             model.testNet()
         

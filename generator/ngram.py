@@ -65,24 +65,24 @@ class Ngram(object):
                     self.reader.readall(mode='valid')
         for a,sv,s,v,sents,dact,base in templates:
             key = (tuple(a),tuple(sv))
-            if da2sents.has_key(key):
+            if key in da2sents:
                 da2sents[key].extend(sents)
                 da2sents[key] = list(set(da2sents[key]))
             else:
                 da2sents[key] = sents
         # accumulate texts for training class-based LM
         cls2texts = {}
-        for key,sents in da2sents.iteritems():
+        for key,sents in da2sents.items():
             a,sv = key
             identifier = (a,sv[:self.rho]) if len(sv)>self.rho else (a,sv)
-            if cls2texts.has_key(identifier):
+            if identifier in cls2texts:
                 cls2texts[identifier].extend(sents)
             else:
                 cls2texts[identifier] = sents
         
         # train class based ngram models
         cls2model = {}
-        for key, sents in cls2texts.iteritems():
+        for key, sents in cls2texts.items():
             model = NGModel(self.reader.vocab,self.topk,self.overgen,
                     self.beamwidth,n=self.N,rho=self.rho)
             model.train(sents)
@@ -108,7 +108,7 @@ class Ngram(object):
             sents,dact,bases = sents[0],dact[0],bases[0]
             # score DA similarity between testing example and class LMs
             model_ranks = []
-            for da_t,model in cls2model.iteritems():
+            for da_t,model in cls2model.items():
                 a_t,sv_t = [set(x) for x in da_t]
                 # cosine similarity
                 score =float(len(a_t.intersection(set(a)))+\

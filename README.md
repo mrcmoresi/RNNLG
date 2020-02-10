@@ -4,6 +4,12 @@ RNNLG is an open source benchmark toolkit for **Natural Language Generation** (N
 
 **UPDATE: If you are interested in learning the techniques behind this toolkit, I recently had a tutorial at INLG conference. The link of the slides is here: https://shawnwun.github.io/talks/DL4NLG_20160906.pdf.
 
+# in ZIM
+
+* Requirements
+- Python/3.4.5
+- Theano/1.0.1
+
 # Requirement
 You need to have the following package to run the program:
 ```
