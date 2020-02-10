@@ -25,7 +25,7 @@ class ERRScorer():
     def __init__(self,detectfile):
 
         self.detectPairs = []
-        fin = file(detectfile)
+        fin = open(detectfile)
         self.detectPairs = json.load(fin)
         fin.close()
 
