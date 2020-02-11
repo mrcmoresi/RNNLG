@@ -224,10 +224,8 @@ class Model(object):
             # decide to throw/keep weights
             if self.valid_logp < self.llogp:
                 self.updateTheanoParams()
-                print('update Theano params')
             else:
                 self.updateNumpyParams()
-                print('update NP params')
             
             self.saveNet()
             # learning rate decay
@@ -510,7 +508,6 @@ class Model(object):
     def saveNet(self):
         if self.debug:
             print('saving net to file ... ')
-            print(self)
         self.updateNumpyParams()
 
         globs = globals()
